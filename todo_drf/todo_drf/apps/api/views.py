@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-
+from rest_framework import serializers
+from .models import *
 ''' imports api views from frame work decorator '''
 from rest_framework.decorators import api_view 
 
@@ -22,7 +23,14 @@ def apiOverview(request):
     'Delete': '/task-delete/<str:pk>/',
 
   }
-  return JsonResponse(api_urls)
+  return Response(api_urls)
 
   ''' Just so that we can see all of the datas in our base
-      create a function '''
+      create a function and return the Response(). Within this function, we fetch data from the model as tasks, 
+      then render it to serializer with many attribute, then it would return the serialized data within
+      the Response(serializer.data)'''
+@api_view(['GET'])
+def taskList(request):
+  tasks = Task.objects.all() 
+  serializer = TaskSerializer(tasks, many=True)
+  return Response(serializer.data)
